@@ -31,7 +31,7 @@ def main():
         current_outdir = opt.outdir
 
     # TODO support dream_web_log.txt (but the file format is different)
-    log_path = os.path.join(current_outdir, 'dream_log.txt')
+    log_path = os.path.join(os.path.dirname(__file__), '..', current_outdir, 'dream_log.txt')
 
     prompt_regex = re.compile(opt.prompt)
     json_matches = []
