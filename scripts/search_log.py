@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import glob
 import os
 import re
 from textwrap import indent
@@ -26,6 +27,9 @@ def main():
     """
     arg_parser = create_argv_parser()
     opt = arg_parser.parse_args()
+
+    if opt.progress_images and not opt.json:
+        raise argparse.ArgumentTypeError('--progress-images option requires --json option too')
 
     if opt.outdir:
         current_outdir = opt.outdir
@@ -66,6 +70,14 @@ def main():
                         value = arg_match.group(2)
                         data[arg_name] = value
 
+                    if opt.progress_images:
+                        # Progress images match the same image number
+                        image_n = os.path.basename(image).split('.')[0]
+                        progress_dir = os.path.join(os.path.dirname(__file__), '..', current_outdir, 'intermediates')
+                        progress_images_full = glob.glob(os.path.join(progress_dir, f'{image_n}.*'))
+                        progress_images = [os.path.join(current_outdir, 'intermediates', os.path.basename(f)) for f in progress_images_full]
+                        data['progress_images'] = progress_images
+
                     json_matches.append(data)
 
     if opt.json:
@@ -89,6 +101,11 @@ def create_argv_parser():
         type=str,
         default='outputs/img-samples',
         help='Directory used to save generated images and a log of prompts and seeds. Default: outputs/img-samples',
+    )
+    parser.add_argument(
+        '--progress-images',
+        action='store_true',
+        help='Include progress images. Requires --json too.',
     )
     return parser
 
