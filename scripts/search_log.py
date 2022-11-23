@@ -72,10 +72,11 @@ def main():
 
                     if opt.progress_images:
                         # Progress images match the same image number
-                        image_n = os.path.basename(image).split('.')[0]
+                        # Hack to fix any Windows path separators that snuck in
+                        image_n = os.path.basename(image.replace('\\', '/')).split('.')[0]
                         progress_dir = os.path.join(os.path.dirname(__file__), '..', current_outdir, 'intermediates')
                         progress_images_full = glob.glob(os.path.join(progress_dir, f'{image_n}.*'))
-                        progress_images = [os.path.join(current_outdir, 'intermediates', os.path.basename(f)) for f in progress_images_full]
+                        progress_images = [os.path.join(current_outdir, 'intermediates', os.path.basename(f)) for f in sorted(progress_images_full)]
                         data['progress_images'] = progress_images
 
                     json_matches.append(data)
